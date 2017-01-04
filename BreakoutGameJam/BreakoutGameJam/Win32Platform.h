@@ -21,6 +21,51 @@ struct Controls
 struct GameState;
 void update_and_render(Controls controls, bool init, GameState *game_state);
 
+union V2
+{
+    float e[2];
+    struct
+    {
+        float x, y;
+    };
+    struct
+    {
+        int ix, iy;
+    };
+};
+
+static V2 V2Constructor(float x, float y)
+{
+    V2 res = {x, y};
+
+    return(res);
+}
+
+static V2 V2Constructor(int x, int y)
+{
+    V2 res = {(float)x, (float)y};
+
+    return(res);
+}
+
+static V2 V2Add(V2 a, V2 b)
+{
+    V2 res;
+    res.x = a.x + b.x;
+    res.y = a.y + b.y;
+
+    return(res);
+}
+
+
+static V2 V2Negate(V2 a)
+{
+    V2 res = {a.x * -1.0f, a.y * -1.0f};
+
+    return(res);
+}
+
+
 struct Texture
 {
     int unsigned id;
@@ -36,17 +81,14 @@ void draw_sprite(Texture tex, float x, float y, float xscale = 1.0f, float yscal
 
 struct Block
 {
-    float X;
-    float Y;
+    V2 pos;
     bool isEnabled;
 };
 
 struct Ball
 {
-    float Xpos;
-    float Ypos;
-    float Xspeed;
-    float Yspeed;
+    V2 pos;
+    V2 speed;
 };
 
 // Generates a random number between two values
@@ -61,29 +103,28 @@ static float RandomNumberGenerator(int Min, int Max)
 static Ball BallConstructor(float x, float y)
 {
     Ball BallResult = {0};
-    BallResult.Xspeed = RandomNumberGenerator(3, 6);
-    BallResult.Yspeed = RandomNumberGenerator(3, 6);
+    BallResult.speed.x = RandomNumberGenerator(3, 6);
+    BallResult.speed.y = RandomNumberGenerator(3, 6);
 
-    if(BallResult.Yspeed <= 1 && BallResult.Xspeed >= -1)
+    if(BallResult.speed.y <= 1 && BallResult.speed.x >= -1)
     {
-        BallResult.Xspeed = 2;
+        BallResult.speed.x = 2;
     }
 
-    if(BallResult.Yspeed <= 1 && BallResult.Yspeed >= -1)
+    if(BallResult.speed.y <= 1 && BallResult.speed.y >= -1)
     {
-        BallResult.Yspeed = 2;
+        BallResult.speed.y = 2;
     }
 
-    BallResult.Xpos = x;
-    BallResult.Ypos = y;
+    BallResult.pos.x = x;
+    BallResult.pos.y = y;
 
     return BallResult;
 }
 
 struct Paddle
 {
-    float X;
-    float Y;
+    V2 pos;
 };
 
 struct GameState
