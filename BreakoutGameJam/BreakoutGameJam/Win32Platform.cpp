@@ -129,6 +129,21 @@ static float Win32GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end, int6
     return((float)(end.QuadPart - start.QuadPart) / (float)perf_counter_frequency);
 }
 
+static float hex_colour_to_float_colour(unsigned char hex)
+{
+    return((float)hex / 255.0f);
+}
+
+static void set_colour(unsigned int colour)
+{
+    char *colour_byte = (char *)&colour;
+
+    glClearColor(hex_colour_to_float_colour(colour_byte[3]),
+                 hex_colour_to_float_colour(colour_byte[2]),
+                 hex_colour_to_float_colour(colour_byte[1]),
+                 hex_colour_to_float_colour(colour_byte[0]));
+}
+
 int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR CommandLine, int ShowCode)
 {
     LARGE_INTEGER perf_counter_frequency_res;
@@ -300,7 +315,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                                 glPushMatrix();
 
                                 glClear(GL_COLOR_BUFFER_BIT);
-                                glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+                                set_colour(0xcafeffff); // Change background colour here! Need 0x before colour code, and FF and the end.
 
                                 glMatrixMode(GL_MODELVIEW);
                                 glPopMatrix();
