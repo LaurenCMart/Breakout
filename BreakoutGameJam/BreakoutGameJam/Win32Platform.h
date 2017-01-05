@@ -129,17 +129,25 @@ struct Paddle
     V2 speed;
 };
 
+struct Life
+{
+    V2 pos;
+};
+
 struct GameState
 {
     Texture paddle;
     Texture ball;
     Texture block;
+    Texture life;
+    Texture lostLife;
+
     Ball aBall;
     Paddle aPaddle;
     Block blocks[32];
+    Life lives[3];
 
-
-    
+    int lifeCount;
 };
 
 #define _WIN32_H

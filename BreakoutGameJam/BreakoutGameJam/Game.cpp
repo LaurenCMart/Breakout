@@ -1,5 +1,12 @@
 // Put all your stuff in this file.
 
+// TO DO:
+// Make "Game Over" Message appear when player loses all 3 lives and ask player if they wish to play again
+// Make a "You Won" Message appear when player destroys all blocks and ask player if they wish to play again
+// Add Background Music
+// Add Sound effects for ball hitting walls and paddle, ball breaking blocks, paddle hitting wall, and losing a life.
+// Add game over and winning game music.
+
 #include "Win32Platform.h"
 
 bool TestOverlap(V2 Position1, V2 Size1, V2 Position2, V2 Size2)
@@ -15,17 +22,30 @@ bool TestOverlap(V2 Position1, V2 Size1, V2 Position2, V2 Size2)
 
 void update_and_render(Controls controls, bool init, GameState *game_state)
 {
-
     if(init)
     {
+        game_state->lifeCount = 3;
+
         game_state->paddle = load_texture_from_disk("BreakoutPaddle.png");
         game_state->ball = load_texture_from_disk("BreakoutBall.png");
         game_state->block = load_texture_from_disk("BreakoutBlock.png");
+
+        game_state->life = load_texture_from_disk("Life.png");
+        game_state->lostLife = load_texture_from_disk("LifeLost.png");
+
         game_state->aPaddle.pos.x = 260;
         game_state->aPaddle.pos.y = 410;
-        game_state->aPaddle.speed.x = 7; //640 / 100;
-        game_state->aPaddle.speed.y = 7; //480 / 100;
+        game_state->aPaddle.speed.x = 7;
+        game_state->aPaddle.speed.y = 7;
+
         game_state->aBall = BallConstructor(310.0f, 280.0f);
+
+        // Lives
+        for(int i = 0; i < 3; i++)
+        {
+            game_state->lives[i].pos.y = (float)((game_state->life.height * i) + (20 * i) + 350);
+            game_state->lives[i].pos.x = 20.0f;
+        }
 
         // Blocks
 
@@ -89,6 +109,7 @@ void update_and_render(Controls controls, bool init, GameState *game_state)
 
     if(ball->pos.y > 480)
     {
+        game_state->lifeCount--;
         ball->pos.x = 310.0f;
         ball->pos.y = 280.0f;
         ball->speed.y *= -1.0f;
@@ -143,7 +164,19 @@ void update_and_render(Controls controls, bool init, GameState *game_state)
             draw_sprite(game_state->block, game_state->blocks[i].pos.x, game_state->blocks[i].pos.y, 1.0f, 1.0f);
 
         }
-    
     }
 
+    // Life Sprites
+    for(int i = 2; i >= 0; --i)
+    {
+        int inverseLifeCount = 3 - game_state->lifeCount;
+        if(i >= inverseLifeCount)
+        {
+            draw_sprite(game_state->life, game_state->lives[i].pos.x, game_state->lives[i].pos.y, 1.0f, 1.0f);
+        }
+        else
+        {
+            draw_sprite(game_state->lostLife, game_state->lives[i].pos.x, game_state->lives[i].pos.y, 1.0f, 1.0f);
+        }
+    }
 }
