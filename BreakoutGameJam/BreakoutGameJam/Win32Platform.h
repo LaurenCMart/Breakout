@@ -36,33 +36,33 @@ union V2
 
 static V2 V2Constructor(float x, float y)
 {
-    V2 res = {x, y};
+    V2 result = {x, y};
 
-    return(res);
+    return(result);
 }
 
 static V2 V2Constructor(int x, int y)
 {
-    V2 res = {(float)x, (float)y};
+    V2 result = {(float)x, (float)y};
 
-    return(res);
+    return(result);
 }
 
 static V2 V2Add(V2 a, V2 b)
 {
-    V2 res;
-    res.x = a.x + b.x;
-    res.y = a.y + b.y;
+    V2 result;
+    result.x = a.x + b.x;
+    result.y = a.y + b.y;
 
-    return(res);
+    return(result);
 }
 
 
 static V2 V2Negate(V2 a)
 {
-    V2 res = {a.x * -1.0f, a.y * -1.0f};
+    V2 result = {a.x * -1.0f, a.y * -1.0f};
 
-    return(res);
+    return(result);
 }
 
 
@@ -72,6 +72,7 @@ struct Texture
     int width;
     int height;
 };
+
 Texture load_texture_from_disk(char const *fname);
 void delete_texture(Texture t);
 
@@ -103,8 +104,8 @@ static float RandomNumberGenerator(int Min, int Max)
 static Ball BallConstructor(float x, float y)
 {
     Ball BallResult = {0};
-    BallResult.speed.x = RandomNumberGenerator(3, 6);
-    BallResult.speed.y = RandomNumberGenerator(3, 6);
+    BallResult.speed.x = RandomNumberGenerator(1, 4);
+    BallResult.speed.y = RandomNumberGenerator(1, 4);
 
     if(BallResult.speed.y <= 1 && BallResult.speed.x >= -1)
     {
@@ -125,6 +126,7 @@ static Ball BallConstructor(float x, float y)
 struct Paddle
 {
     V2 pos;
+    V2 speed;
 };
 
 struct GameState

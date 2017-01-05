@@ -146,15 +146,18 @@ static void set_colour(unsigned int colour)
 
 int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR CommandLine, int ShowCode)
 {
+    srand((unsigned int)time(0));
     LARGE_INTEGER perf_counter_frequency_res;
     QueryPerformanceFrequency(&perf_counter_frequency_res);
     int64_t perf_counter_frequency = perf_counter_frequency_res.QuadPart;
 
-    WNDCLASS wnd_class = {};
+    WNDCLASSA wnd_class = {};
     wnd_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     wnd_class.hInstance = Instance;
-    wnd_class.lpszClassName = TEXT("Breakout_Game");
+    wnd_class.lpszClassName = "Breakout_Game";
     wnd_class.lpfnWndProc = &Win32WinProc;
+    wnd_class.hCursor = LoadCursor(NULL, IDC_ARROW);
+
 
     int monitor_refresh_hz = 60;
     int game_update_hz = monitor_refresh_hz;
@@ -163,13 +166,13 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
 
     timeBeginPeriod(1);
 
-    if(!RegisterClass(&wnd_class))
+    if(!RegisterClassA(&wnd_class))
     {
         fprintf(stderr, "Failed to register window class (somehow??)");
     }
     else
     {
-        HWND wnd = CreateWindowEx(0, wnd_class.lpszClassName, L"Breakout", (WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_POPUP),
+        HWND wnd = CreateWindowExA(0, wnd_class.lpszClassName, "Breakout", (WS_VISIBLE | WS_POPUP | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX),
                                    CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, 0, 0, Instance, 0);
         if(wnd == INVALID_HANDLE_VALUE)
         {
@@ -191,10 +194,10 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                 else
                 {
                     // Enable opengl stuff.
-                    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+                    //glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
                     glMatrixMode(GL_PROJECTION);
                     glLoadIdentity();
-                    glOrtho(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f, -1.0f);
+                    glOrtho(0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, -1.0f);
                     glMatrixMode(GL_MODELVIEW);
                     glLoadIdentity();
                     glPushMatrix();
@@ -217,7 +220,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                         bool first_time = true;
                         Controls controls = {};
 
-                        float camx = 0.0f, camy = 0.0f;
+                        //float camx = 0.0f, camy = 0.0f;
 
                         GameState *game_state = (GameState *)malloc(sizeof(GameState));
                         if(!game_state)
@@ -264,7 +267,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                                     controls.prev_down = false;
                                 }
 
-                                controls.left = false; controls.right = false; controls.up = false; controls.down = false;
+                                //controls.left = false; controls.right = false; controls.up = false; controls.down = false;
 
                                 MSG msg;
                                 while(PeekMessageA(&msg, wnd, 0, 0, PM_REMOVE))
@@ -299,6 +302,29 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                                             }
                                         } break;
 
+                                        case WM_KEYUP:
+                                        {
+                                            switch(msg.wParam)
+                                            {
+                                                case 'a': case VK_LEFT:
+                                                {
+                                                    controls.left = false;
+                                                } break;
+                                                case 'd': case VK_RIGHT:
+                                                {
+                                                    controls.right = false;
+                                                } break;
+                                                case 'w': case VK_UP:
+                                                {
+                                                    controls.up = false;
+                                                } break;
+                                                case 's': case VK_DOWN:
+                                                {
+                                                    controls.down = false;
+                                                } break;
+                                            }
+                                        } break;
+
                                         default:
                                         {
                                             TranslateMessage(&msg);
@@ -311,7 +337,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                                 glPopMatrix();
                                 glLoadIdentity();
 
-                                glTranslatef(camx, camy, 0.0f);
+                                //glTranslatef(camx, camy, 0.0f);
                                 glPushMatrix();
 
                                 glClear(GL_COLOR_BUFFER_BIT);
