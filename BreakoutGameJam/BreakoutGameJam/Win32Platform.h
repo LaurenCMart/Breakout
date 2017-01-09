@@ -134,6 +134,9 @@ struct Life
     V2 pos;
 };
 
+bool displayMessageBox();
+bool displayWinMessageBox();
+
 struct GameState
 {
     Texture paddle;
@@ -148,6 +151,8 @@ struct GameState
     Life lives[3];
 
     int lifeCount;
+    bool running;
+
 };
 
 #define _WIN32_H

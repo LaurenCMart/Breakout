@@ -12,11 +12,38 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-static bool global_running = true;
 static HDC global_dc = 0;
 
 #define SCREEN_WIDTH (640)
 #define SCREEN_HEIGHT (480)
+
+bool displayMessageBox()
+{
+    int returnedMessageBox = MessageBoxA(NULL, "Would you like to play again?", "Game Over", MB_YESNO | MB_ICONQUESTION | MB_APPLMODAL);
+    
+    if(returnedMessageBox == IDYES)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool displayWinMessageBox()
+{
+    int returnedMessageBox = MessageBoxA(NULL, "Would you like to play again?", "You Won!", MB_YESNO | MB_ICONQUESTION | MB_APPLMODAL);
+
+    if(returnedMessageBox == IDYES)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
 
 // External functions.
 Texture load_texture_from_disk(char const *fname)
@@ -105,7 +132,7 @@ static LRESULT CALLBACK Win32WinProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM l
     {
         case WM_CLOSE:
         {
-            global_running = false;
+            //global_running = false;
         } break;
         default:
         {
@@ -216,7 +243,6 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                         LARGE_INTEGER flip_wall_clock = Win32GetWallClock();
 
                         float ms_per_frame = target_seconds_per_frame;
-                        global_running = true;
                         bool first_time = true;
                         Controls controls = {};
 
@@ -230,9 +256,10 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                         else
                         {
                             memset(game_state, 0, sizeof(GameState));
+                            game_state->running = true;
 
                             // Game loop start.
-                            while(global_running)
+                            while(game_state->running)
                             {
                                 if(controls.left)
                                 {
@@ -276,7 +303,7 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                                     {
                                         case WM_QUIT:
                                         {
-                                            global_running = false;
+                                            game_state->running = false;
                                         } break;
 
                                         case WM_KEYDOWN:

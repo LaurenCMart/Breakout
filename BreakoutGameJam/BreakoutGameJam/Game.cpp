@@ -20,57 +20,66 @@ bool TestOverlap(V2 Position1, V2 Size1, V2 Position2, V2 Size2)
     return false;
 }
 
+void initGame(GameState *game_state)
+{
+    game_state->lifeCount = 3;
+
+    game_state->paddle = load_texture_from_disk("BreakoutPaddle.png");
+    game_state->ball = load_texture_from_disk("BreakoutBall.png");
+    game_state->block = load_texture_from_disk("BreakoutBlock.png");
+
+    game_state->life = load_texture_from_disk("Life.png");
+    game_state->lostLife = load_texture_from_disk("LifeLost.png");
+
+    game_state->aPaddle.pos.x = 260;
+    game_state->aPaddle.pos.y = 410;
+    game_state->aPaddle.speed.x = 7;
+    game_state->aPaddle.speed.y = 7;
+
+    game_state->aBall = BallConstructor(310.0f, 280.0f);
+
+
+
+    // Lives
+    for(int i = 0; i < 3; i++)
+    {
+        game_state->lives[i].pos.y = (float)((game_state->life.height * i) + (20 * i) + 350);
+        game_state->lives[i].pos.x = 20.0f;
+    }
+
+    // Blocks
+
+    int i = 0;
+    bool shouldShift = false;
+    for(int y = 0; y < 3; y++)
+    {
+        for(int x = 0; x < ((shouldShift == true) ? 7 : 8); x++)
+        {
+            if(shouldShift)
+            {
+                game_state->blocks[i].pos.x = (float)((game_state->block.width * x) + (20 * x) + 10 + (game_state->block.width / 2));
+            }
+            else
+            {
+                game_state->blocks[i].pos.x = (float)((game_state->block.width * x) + (18 * x) + 10);
+
+            }
+            game_state->blocks[i].pos.y = (float)((game_state->block.height * y) + (18 * y) + 20);
+
+            game_state->blocks[i].isEnabled = true;
+            ++i;
+        }
+        shouldShift = !shouldShift;
+    }
+}
+
 void update_and_render(Controls controls, bool init, GameState *game_state)
 {
+
+
     if(init)
     {
-        game_state->lifeCount = 3;
-
-        game_state->paddle = load_texture_from_disk("BreakoutPaddle.png");
-        game_state->ball = load_texture_from_disk("BreakoutBall.png");
-        game_state->block = load_texture_from_disk("BreakoutBlock.png");
-
-        game_state->life = load_texture_from_disk("Life.png");
-        game_state->lostLife = load_texture_from_disk("LifeLost.png");
-
-        game_state->aPaddle.pos.x = 260;
-        game_state->aPaddle.pos.y = 410;
-        game_state->aPaddle.speed.x = 7;
-        game_state->aPaddle.speed.y = 7;
-
-        game_state->aBall = BallConstructor(310.0f, 280.0f);
-
-        // Lives
-        for(int i = 0; i < 3; i++)
-        {
-            game_state->lives[i].pos.y = (float)((game_state->life.height * i) + (20 * i) + 350);
-            game_state->lives[i].pos.x = 20.0f;
-        }
-
-        // Blocks
-
-        int i = 0;
-        bool shouldShift = false;
-        for(int y = 0; y < 3; y++)
-        {
-            for(int x = 0; x < ((shouldShift == true) ? 7 : 8); x++)
-            {
-                if(shouldShift)
-                {
-                    game_state->blocks[i].pos.x = (float)((game_state->block.width * x) + (20 * x) + 10 + (game_state->block.width / 2));
-                }
-                else
-                {
-                    game_state->blocks[i].pos.x = (float)((game_state->block.width * x) + (18 * x) + 10);
-
-                }
-                game_state->blocks[i].pos.y = (float)((game_state->block.height * y) + (18 * y) + 20);
-
-                game_state->blocks[i].isEnabled = true;
-                ++i;
-            }
-            shouldShift = !shouldShift;
-        }
+        initGame(game_state);
     }
 
     // Ball time!
@@ -179,4 +188,41 @@ void update_and_render(Controls controls, bool init, GameState *game_state)
             draw_sprite(game_state->lostLife, game_state->lives[i].pos.x, game_state->lives[i].pos.y, 1.0f, 1.0f);
         }
     }
+
+    if(game_state->lifeCount == 0)
+    {
+        if(displayMessageBox() == true)
+        {
+            initGame(game_state);
+        }
+        else
+        {
+            game_state->running = false;
+        }
+
+    }
+
+
+    int destroyedBlockCount = 0;
+    
+    for(int i = 0; i < 32; i++)
+    {
+        if(game_state->blocks[i].isEnabled == false)
+        {
+            destroyedBlockCount++;
+        }
+    }
+
+    if(destroyedBlockCount == 32)
+    {
+        if(displayWinMessageBox() == true)
+        {
+            initGame(game_state);
+        }
+        else
+        {
+            game_state->running = false;
+        }
+    }
+
 }
