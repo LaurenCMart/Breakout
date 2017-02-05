@@ -8,6 +8,9 @@
 
 #include "Win32Platform.h"
 
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 #define STBI_ONLY_PNG
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -93,6 +96,51 @@ void draw_sprite(Texture tex, float x, float y, float xscale/*= 1.0f*/, float ys
     // Reset the scale, then unbind the sprite.
     glScalef(1.0f / xscale, 1.0f / yscale, 1.0f);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+// Loading Audio
+bool loadMedia(GameState *game_state)
+{
+    //Loading success flag
+    bool success = true;
+
+    game_state->gMusic = Mix_LoadMUS("Itty Bitty 8 Bit Music - Sound Effect.wav");
+    if(game_state->gMusic == NULL)
+    {
+        printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    /*//Load sound effects
+    game_state->gScratch = Mix_LoadWAV("21_sound_effects_and_music/scratch.wav");
+    if(game_state->gScratch == NULL)
+    {
+        printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    game_state->gHigh = Mix_LoadWAV("21_sound_effects_and_music/high.wav");
+    if(game_state->gHigh == NULL)
+    {
+        printf("Failed to load high sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    game_state->gMedium = Mix_LoadWAV("21_sound_effects_and_music/medium.wav");
+    if(game_state->gMedium == NULL)
+    {
+        printf("Failed to load medium sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+
+    game_state->gLow = Mix_LoadWAV("21_sound_effects_and_music/low.wav");
+    if(game_state->gLow == NULL)
+    {
+        printf("Failed to load low sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }*/
+
+    return success;
 }
 
 // Internal functions.
@@ -257,6 +305,22 @@ int CALLBACK WinMain(HINSTANCE Instance, HINSTANCE PreviousInstance, LPSTR Comma
                         {
                             memset(game_state, 0, sizeof(GameState));
                             game_state->running = true;
+
+                            // SDL
+                            //Initialize SDL
+                            if(SDL_Init(SDL_INIT_AUDIO) < 0)
+                            {
+                                printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+                                bool success = false;
+                            }
+
+                            // Music
+                            if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+                            {
+                                printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+                                exit(0);
+                            }
+                            loadMedia(game_state);
 
                             // Game loop start.
                             while(game_state->running)

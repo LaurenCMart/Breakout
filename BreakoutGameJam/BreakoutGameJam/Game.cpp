@@ -1,13 +1,13 @@
 // Put all your stuff in this file.
 
 // TO DO:
-// Make "Game Over" Message appear when player loses all 3 lives and ask player if they wish to play again
-// Make a "You Won" Message appear when player destroys all blocks and ask player if they wish to play again
 // Add Background Music
 // Add Sound effects for ball hitting walls and paddle, ball breaking blocks, paddle hitting wall, and losing a life.
 // Add game over and winning game music.
 
 #include "Win32Platform.h"
+#include <SDL.h>
+#include <SDL_mixer.h>
 
 bool TestOverlap(V2 Position1, V2 Size1, V2 Position2, V2 Size2)
 {
@@ -71,12 +71,13 @@ void initGame(GameState *game_state)
         }
         shouldShift = !shouldShift;
     }
+
+    // Background Music
+    Mix_PlayMusic(game_state->gMusic, -1);
 }
 
 void update_and_render(Controls controls, bool init, GameState *game_state)
 {
-
-
     if(init)
     {
         initGame(game_state);

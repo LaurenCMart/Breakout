@@ -2,6 +2,8 @@
 #include <time.h>
 #include <math.h>
 #include <stdlib.h>
+#include <SDL.h>
+#include <SDL_mixer.h>
 
 struct Controls
 {
@@ -149,6 +151,15 @@ struct GameState
     Paddle aPaddle;
     Block blocks[32];
     Life lives[3];
+
+    //The music that will be played
+    Mix_Music *gMusic = NULL;
+
+    /*//The sound effects that will be used
+    Mix_Chunk *gScratch = NULL;
+    Mix_Chunk *gHigh = NULL;
+    Mix_Chunk *gMedium = NULL;
+    Mix_Chunk *gLow = NULL;*/
 
     int lifeCount;
     bool running;
